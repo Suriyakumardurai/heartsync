@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
+import { INITIAL_PROFILES } from '../constants';
 
 const Matches = () => {
     const [blockedUsers, setBlockedUsers] = useState(JSON.parse(localStorage.getItem('blockedUsers') || '[]'));
 
-    const INITIAL_PROFILES = [
-        { id: 1, name: 'Sarah', photo: '/Photos/photo1.png' },
-        { id: 2, name: 'Mike', photo: '/Photos/photo2.png' },
-        { id: 3, name: 'Elena', photo: '/Photos/photo3.png' },
-    ];
-
     const matches = INITIAL_PROFILES.filter(p => !blockedUsers.includes(p.id.toString()));
+
 
     const handleBlock = (id, name) => {
         const newBlocked = [...blockedUsers, id.toString()];
@@ -40,7 +36,6 @@ const Matches = () => {
                                         src={match.photo}
                                         alt={match.name}
                                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                        referrerPolicy="no-referrer"
                                     />
                                 </div>
                                 <div className="absolute bottom-2 left-2 text-white font-semibold drop-shadow-md">

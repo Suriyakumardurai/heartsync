@@ -40,7 +40,6 @@ const Chat = () => {
           <img
             src={`/Photos/photo${id}.png`}
             className="w-10 h-10 rounded-full object-cover"
-            referrerPolicy="no-referrer"
           />
           <div>
             <span className="font-bold block">User {id}</span>

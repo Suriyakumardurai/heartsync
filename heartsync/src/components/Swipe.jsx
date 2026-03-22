@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { INITIAL_PROFILES } from '../constants';
 
-const INITIAL_PROFILES = [
-    { id: 1, name: 'Sarah', age: 24, bio: 'Coffee lover and travel enthusiast.', photo: '/Photos/photo1.png' },
-    { id: 2, name: 'Mike', age: 27, bio: 'Fitness freak and dog dad.', photo: '/Photos/photo2.png' },
-    { id: 3, name: 'Elena', age: 22, bio: 'Aspiring chef and bookworm.', photo: '/Photos/photo3.png' },
-];
 
 const Swipe = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -67,7 +63,6 @@ const Swipe = () => {
                         <img
                             src={p.photo}
                             className="w-full h-full object-cover pointer-events-none"
-                            referrerPolicy="no-referrer"
                         />
                         <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/90 via-black/40 to-transparent text-white">
                             <h3 className="text-3xl font-bold">{p.name}, {p.age}</h3>

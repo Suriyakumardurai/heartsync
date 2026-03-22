@@ -117,7 +117,7 @@ const ProfileSettings = () => {
         <div className="p-6 max-w-md mx-auto">
             <div className="text-center mb-8">
                 <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-4 overflow-hidden border-4 border-rose-500 shadow-lg">
-                    <img src="/Photos/photo1.png" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    <img src="/Photos/photo1.png" className="w-full h-full object-cover" />
                 </div>
                 <h2 className="text-2xl font-bold">{formData.name}</h2>
                 <p className="text-gray-500">{formData.location}</p>

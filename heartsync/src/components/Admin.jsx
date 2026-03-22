@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
-import { User, Shield, AlertTriangle, Check, Trash2, LogOut } from 'lucide-react';
-
-const INITIAL_PROFILES = [
-  { id: 1, name: 'Sarah', age: 24, location: 'New York', photo: '/Photos/photo1.png' },
-  { id: 2, name: 'Mike', age: 27, location: 'Brooklyn', photo: '/Photos/photo2.png' },
-  { id: 3, name: 'Elena', age: 22, location: 'Queens', photo: '/Photos/photo3.png' },
-  { id: 4, name: 'David', age: 29, location: 'Manhattan', photo: '/Photos/photo4.png' },
-  { id: 5, name: 'Chloe', age: 25, location: 'Astoria', photo: '/Photos/photo5.png' },
-];
+import { User, Shield, AlertTriangle, Check, Trash2, LogOut, RefreshCcw } from 'lucide-react';
+import { INITIAL_PROFILES } from '../constants';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('users');
@@ -15,6 +8,15 @@ const AdminDashboard = () => {
     const saved = localStorage.getItem('allUsers');
     return saved ? JSON.parse(saved) : INITIAL_PROFILES;
   });
+
+  const handleResetData = () => {
+    if (window.confirm('Are you sure you want to reset all user data? This will restore the original profiles and photo links.')) {
+      localStorage.setItem('allUsers', JSON.stringify(INITIAL_PROFILES));
+      setUsers(INITIAL_PROFILES);
+      alert('Data reset successfully!');
+    }
+  };
+
   const [reports, setReports] = useState(() => {
     const saved = localStorage.getItem('reports');
     return saved ? JSON.parse(saved) : [
@@ -93,8 +95,14 @@ const AdminDashboard = () => {
           </button>
         </nav>
         <button
+          onClick={handleResetData}
+          className="flex items-center gap-3 p-3 text-amber-600 hover:bg-amber-50 rounded-lg transition mt-auto mb-2"
+        >
+          <RefreshCcw className="w-5 h-5" /> Reset Data
+        </button>
+        <button
           onClick={logout}
-          className="flex items-center gap-3 p-3 text-red-600 hover:bg-red-50 rounded-lg transition mt-4"
+          className="flex items-center gap-3 p-3 text-red-600 hover:bg-red-50 rounded-lg transition"
         >
           <LogOut className="w-5 h-5" /> Logout
         </button>
@@ -119,7 +127,7 @@ const AdminDashboard = () => {
                 {users.map(u => (
                   <tr key={u.id} className="border-b hover:bg-gray-50 transition">
                     <td className="p-4 flex items-center gap-3">
-                      <img src={u.photo} className="w-10 h-10 rounded-full object-cover" referrerPolicy="no-referrer" />
+                      <img src={u.photo} className="w-10 h-10 rounded-full object-cover" />
                       <span className="font-medium">{u.name}</span>
                     </td>
                     <td className="p-4 text-gray-600">{u.location}</td>
