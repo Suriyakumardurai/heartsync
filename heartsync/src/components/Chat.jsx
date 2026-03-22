@@ -1,33 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MessageCircle, AlertTriangle, X, Send } from 'lucide-react';
+import { getScopedData, setScopedData } from '../utils/storage';
 
 const Chat = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [msg, setMsg] = useState('');
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hey! How's it going?", sender: 'other' },
-    { id: 2, text: "I'm good, just finished a hike!", sender: 'me' },
-  ]);
+  const [messages, setMessages] = useState(() => {
+    return getScopedData(`chat_messages_${id}`, [
+      { id: 1, text: "Hey! How's it going?", sender: 'other' },
+      { id: 2, text: "I'm good, just finished a hike!", sender: 'me' },
+    ]);
+  });
 
   const handleSend = (e) => {
     e.preventDefault();
     if (!msg.trim()) return;
-    setMessages([...messages, { id: Date.now(), text: msg, sender: 'me' }]);
+    const newMessages = [...messages, { id: Date.now(), text: msg, sender: 'me' }];
+    setMessages(newMessages);
+    setScopedData(`chat_messages_${id}`, newMessages);
     setMsg('');
   };
 
   const handleReport = () => {
-    const blocked = JSON.parse(localStorage.getItem('blockedUsers') || '[]');
+    const blocked = getScopedData('blockedUsers', []);
     if (!blocked.includes(id)) {
       blocked.push(id);
-      localStorage.setItem('blockedUsers', JSON.stringify(blocked));
+      setScopedData('blockedUsers', blocked);
     }
 
-    const reports = JSON.parse(localStorage.getItem('reports') || '[]');
+    const reports = getScopedData('reports', []);
     reports.push({ id: Date.now(), user: `User ${id}`, userId: id, reason: 'Reported from chat', status: 'pending' });
-    localStorage.setItem('reports', JSON.stringify(reports));
+    setScopedData('reports', reports);
 
     navigate('/matches');
   };
@@ -40,7 +45,6 @@ const Chat = () => {
           <img
             src={`/Photos/photo${id}.png`}
             className="w-10 h-10 rounded-full object-cover"
-            referrerPolicy="no-referrer"
           />
           <div>
             <span className="font-bold block">User {id}</span>
@@ -61,8 +65,8 @@ const Chat = () => {
         {messages.map(m => (
           <div key={m.id} className={`flex ${m.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[80%] p-3 rounded-2xl shadow-sm ${m.sender === 'me'
-              ? 'bg-rose-500 text-white rounded-tr-none'
-              : 'bg-white text-gray-800 rounded-tl-none border'
+                ? 'bg-rose-500 text-white rounded-tr-none'
+                : 'bg-white text-gray-800 rounded-tl-none border'
               }`}>
               {m.text}
             </div>

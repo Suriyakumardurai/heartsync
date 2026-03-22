@@ -58,19 +58,59 @@ const Auth = ({ type }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const user = { email, role: email.includes('admin') ? 'admin' : 'user', id: Date.now() };
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    window.dispatchEvent(new Event('storage'));
-    navigate(user.role === 'admin' ? '/admin' : '/swipe');
+    setError('');
+    
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+
+    if (type === 'signup') {
+      const exists = registeredUsers.find(u => u.email === email);
+      if (exists) {
+        setError('This email is already registered.');
+        return;
+      }
+      
+      const newUser = { 
+        email, 
+        password, 
+        role: email.toLowerCase().includes('admin') ? 'admin' : 'user', 
+        id: Date.now() 
+      };
+      
+      const newUsersList = [...registeredUsers, newUser];
+      localStorage.setItem('registeredUsers', JSON.stringify(newUsersList));
+      localStorage.setItem('currentUser', JSON.stringify(newUser));
+      window.dispatchEvent(new Event('storage'));
+      navigate(newUser.role === 'admin' ? '/admin' : '/swipe');
+    } else {
+      // Login
+      const user = registeredUsers.find(u => u.email === email && u.password === password);
+      if (!user) {
+        setError('Invalid email or password.');
+        return;
+      }
+      
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      window.dispatchEvent(new Event('storage'));
+      navigate(user.role === 'admin' ? '/admin' : '/swipe');
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">{type === 'login' ? 'Welcome Back' : 'Join HeartSync'}</h2>
+        
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm font-medium flex items-center gap-2">
+            <AlertCircle className="w-4 h-4" />
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -78,7 +118,7 @@ const Auth = ({ type }) => {
               type="email"
               required
               className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none"
-              placeholder="admin@heartsync.com"
+              placeholder="user@heartsync.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -89,7 +129,7 @@ const Auth = ({ type }) => {
               type="password"
               required
               className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none"
-              placeholder="admin123"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
