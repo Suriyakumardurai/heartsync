@@ -1,43 +1,38 @@
 import React, { useState } from 'react';
 import { User, Shield, AlertTriangle, Check, Trash2, LogOut, RefreshCcw } from 'lucide-react';
 import { INITIAL_PROFILES } from '../constants';
+import { getScopedData, setScopedData } from '../utils/storage';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('users');
-  const [users, setUsers] = useState(() => {
-    const saved = localStorage.getItem('allUsers');
-    return saved ? JSON.parse(saved) : INITIAL_PROFILES;
-  });
+  const [users, setUsers] = useState(() => getScopedData('allUsers', INITIAL_PROFILES));
 
   const handleResetData = () => {
     if (window.confirm('Are you sure you want to reset all user data? This will restore the original profiles and photo links.')) {
-      localStorage.setItem('allUsers', JSON.stringify(INITIAL_PROFILES));
+      setScopedData('allUsers', INITIAL_PROFILES);
       setUsers(INITIAL_PROFILES);
       alert('Data reset successfully!');
     }
   };
 
   const [reports, setReports] = useState(() => {
-    const saved = localStorage.getItem('reports');
-    return saved ? JSON.parse(saved) : [
+    return getScopedData('reports', [
       { id: 1, user: 'Mike', reason: 'Inappropriate content', status: 'pending' },
       { id: 2, user: 'Elena', reason: 'Spamming', status: 'pending' },
-    ];
+    ]);
   });
   const [reviews, setReviews] = useState(() => {
-    const saved = localStorage.getItem('contentReviews');
-    return saved ? JSON.parse(saved) : [
+    return getScopedData('contentReviews', [
       { id: 1, user: 'David', content: 'Profile Bio: "I love hacking"', type: 'Bio' },
       { id: 2, user: 'Chloe', content: 'Photo Update', type: 'Image' },
-    ];
+    ]);
   });
 
   const handleReviewAction = (id, approved) => {
     const newReviews = reviews.filter(rev => rev.id !== id);
     setReviews(newReviews);
-    localStorage.setItem('contentReviews', JSON.stringify(newReviews));
+    setScopedData('contentReviews', newReviews);
     if (!approved) {
-      // If rejected, we could potentially flag the user or notify them
       console.log(`Review ${id} rejected`);
     } else {
       console.log(`Review ${id} approved`);
@@ -47,13 +42,13 @@ const AdminDashboard = () => {
   const handleDeleteUser = (id) => {
     const newUsers = users.filter(u => u.id !== id);
     setUsers(newUsers);
-    localStorage.setItem('allUsers', JSON.stringify(newUsers));
+    setScopedData('allUsers', newUsers);
   };
 
   const handleDismissReport = (id) => {
     const newReports = reports.filter(r => r.id !== id);
     setReports(newReports);
-    localStorage.setItem('reports', JSON.stringify(newReports));
+    setScopedData('reports', newReports);
   };
 
   const handleActionReport = (report) => {

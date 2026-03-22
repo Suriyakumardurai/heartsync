@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { INITIAL_PROFILES } from '../constants';
+import { getScopedData, setScopedData } from '../utils/storage';
 
 const Matches = () => {
-    const [blockedUsers, setBlockedUsers] = useState(JSON.parse(localStorage.getItem('blockedUsers') || '[]'));
+    const [blockedUsers, setBlockedUsers] = useState(() => getScopedData('blockedUsers', []));
 
     const matches = INITIAL_PROFILES.filter(p => !blockedUsers.includes(p.id.toString()));
 
@@ -12,11 +13,11 @@ const Matches = () => {
     const handleBlock = (id, name) => {
         const newBlocked = [...blockedUsers, id.toString()];
         setBlockedUsers(newBlocked);
-        localStorage.setItem('blockedUsers', JSON.stringify(newBlocked));
+        setScopedData('blockedUsers', newBlocked);
 
-        const reports = JSON.parse(localStorage.getItem('reports') || '[]');
+        const reports = getScopedData('reports', []);
         reports.push({ id: Date.now(), user: name, userId: id, reason: 'Reported from matches', status: 'pending' });
-        localStorage.setItem('reports', JSON.stringify(reports));
+        setScopedData('reports', reports);
     };
 
     return (

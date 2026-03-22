@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { INITIAL_PROFILES } from '../constants';
-
+import { getScopedData } from '../utils/storage';
 
 const Swipe = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState(null);
 
-    const profiles = JSON.parse(localStorage.getItem('allUsers') || JSON.stringify(INITIAL_PROFILES));
+    const profiles = getScopedData('allUsers', INITIAL_PROFILES);
+
 
     if (currentIndex >= profiles.length) {
         return (

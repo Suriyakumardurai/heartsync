@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MessageCircle, AlertTriangle, X, Send } from 'lucide-react';
+import { getScopedData, setScopedData } from '../utils/storage';
 
 const Chat = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [msg, setMsg] = useState('');
   const [messages, setMessages] = useState(() => {
-    const saved = localStorage.getItem(`chat_messages_${id}`);
-    return saved ? JSON.parse(saved) : [
+    return getScopedData(`chat_messages_${id}`, [
       { id: 1, text: "Hey! How's it going?", sender: 'other' },
       { id: 2, text: "I'm good, just finished a hike!", sender: 'me' },
-    ];
+    ]);
   });
 
   const handleSend = (e) => {
@@ -19,20 +19,20 @@ const Chat = () => {
     if (!msg.trim()) return;
     const newMessages = [...messages, { id: Date.now(), text: msg, sender: 'me' }];
     setMessages(newMessages);
-    localStorage.setItem(`chat_messages_${id}`, JSON.stringify(newMessages));
+    setScopedData(`chat_messages_${id}`, newMessages);
     setMsg('');
   };
 
   const handleReport = () => {
-    const blocked = JSON.parse(localStorage.getItem('blockedUsers') || '[]');
+    const blocked = getScopedData('blockedUsers', []);
     if (!blocked.includes(id)) {
       blocked.push(id);
-      localStorage.setItem('blockedUsers', JSON.stringify(blocked));
+      setScopedData('blockedUsers', blocked);
     }
 
-    const reports = JSON.parse(localStorage.getItem('reports') || '[]');
+    const reports = getScopedData('reports', []);
     reports.push({ id: Date.now(), user: `User ${id}`, userId: id, reason: 'Reported from chat', status: 'pending' });
-    localStorage.setItem('reports', JSON.stringify(reports));
+    setScopedData('reports', reports);
 
     navigate('/matches');
   };
