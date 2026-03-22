@@ -6,15 +6,20 @@ const Chat = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [msg, setMsg] = useState('');
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hey! How's it going?", sender: 'other' },
-    { id: 2, text: "I'm good, just finished a hike!", sender: 'me' },
-  ]);
+  const [messages, setMessages] = useState(() => {
+    const saved = localStorage.getItem(`chat_messages_${id}`);
+    return saved ? JSON.parse(saved) : [
+      { id: 1, text: "Hey! How's it going?", sender: 'other' },
+      { id: 2, text: "I'm good, just finished a hike!", sender: 'me' },
+    ];
+  });
 
   const handleSend = (e) => {
     e.preventDefault();
     if (!msg.trim()) return;
-    setMessages([...messages, { id: Date.now(), text: msg, sender: 'me' }]);
+    const newMessages = [...messages, { id: Date.now(), text: msg, sender: 'me' }];
+    setMessages(newMessages);
+    localStorage.setItem(`chat_messages_${id}`, JSON.stringify(newMessages));
     setMsg('');
   };
 
