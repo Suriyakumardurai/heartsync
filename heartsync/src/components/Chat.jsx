@@ -61,8 +61,8 @@ const Chat = () => {
         {messages.map(m => (
           <div key={m.id} className={`flex ${m.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[80%] p-3 rounded-2xl shadow-sm ${m.sender === 'me'
-              ? 'bg-rose-500 text-white rounded-tr-none'
-              : 'bg-white text-gray-800 rounded-tl-none border'
+                ? 'bg-rose-500 text-white rounded-tr-none'
+                : 'bg-white text-gray-800 rounded-tl-none border'
               }`}>
               {m.text}
             </div>
